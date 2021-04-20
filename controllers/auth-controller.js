@@ -5,15 +5,12 @@ const { generateJWT } = require('../helpers/jwt');
 
 const createUser = async (req, res) => {
 
-    //extraer email del cuerpo de la peticion
     const {email, password} = req.body;
 
     try {
 
-        //Busqueda en la base de datos el email
         let user = await User.findOne({email});
 
-        //Comprobar si el email ya se encuentra en la base de datos
         if(user) {
             return res.status(400).json({
                 ok: false,
@@ -21,21 +18,16 @@ const createUser = async (req, res) => {
             })
         }
         
-        //Instanciar un nuevo usuario con el Schema User
         user = new User( req.body );
     
 
-        //Encriptar contraseña
         const salt = bcrypt.genSaltSync();
         user.password = bcrypt.hashSync(password, salt);
 
-        //Generar JWT
         const token = await generateJWT(user.id, user.name);
 
-        //Grabar en la base de datos el nuevo usuario instanciado
         await user.save();
         
-        //Retornar status 201 con la creacion de un nuevo usuario
         res.status(201).json({
             ok: true,
             uid: user._id,
@@ -44,7 +36,6 @@ const createUser = async (req, res) => {
         });
 
     } catch (error) {
-        //manejo de error en la creación de un nuevo usuario
         console.log(error);
         res.status(500).json({
             ok: false,
@@ -69,7 +60,6 @@ const loginUser = async (req, res) => {
             });
         }
 
-        //verificar contraseñas
         const validPassword = bcrypt.compareSync(password, user.password);
         
         if (!validPassword) {
@@ -79,7 +69,6 @@ const loginUser = async (req, res) => {
             })
         }
 
-        //Generar JWT
         const token = await generateJWT(user.id, user.name);
     
         res.json({
@@ -91,7 +80,6 @@ const loginUser = async (req, res) => {
 
         
     } catch (error) {
-        //manejo de error en la creación de un nuevo usuario
         console.log(error);
         res.status(500).json({
             ok: false,

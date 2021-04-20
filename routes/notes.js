@@ -14,16 +14,13 @@ const { validateJWT } = require('../middlewares/validate-jwt');
 router.use(validateJWT);
 
 //Rutas
-//Obtener notas
 router.get('/',getNotes);
 
-//Crear notas
 router.post('/',[
     check('text', 'El texto de la nota es obligatorio').not().isEmpty(),
     validateFields
 ],createNote );
 
-//Actualizar evento
 router.put('/:id',[
     check('completed', 'El campo deleted es obligatorio').not().isEmpty(),
     check('completed', 'El campo deleted debe ser true o false').isBoolean(),
